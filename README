@@ -1,0 +1,23 @@
+Setup:
+
+In order to build the firmware, the Zephyr development environment
+needs to be set up. This includes both the Zephyr SDK and the Zephyr
+source tree. Refer to the Zephyr getting started guide[1] for
+detailed instructions.
+
+Flashing the firmware requires SEGGER J-Link utilites. Refer to the
+nRF52-PCA10040 Zephyr documentation[2] for further details.
+
+Building:
+
+The firmware is build the same way as any other Zephyr project:
+$ mkdir build
+$ cd build
+$ cmake -DBOARD=nrf52_pca10040 ..
+$ make
+$ make flash
+
+References:
+
+[1] http://docs.zephyrproject.org/getting_started/getting_started.html
+[2] http://docs.zephyrproject.org/boards/arm/nrf52_pca10040/doc/nrf52_pca10040.html#programming-and-debugging

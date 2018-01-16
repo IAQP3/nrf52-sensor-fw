@@ -1,4 +1,5 @@
 #include <bluetooth/bluetooth.h>
+#include <bluetooth/conn.h>
 #include <stdio.h>
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
@@ -28,6 +29,25 @@ static void bt_ready_cb(int err)
 	}
 }
 
+static void bt_connected_cb(struct bt_conn *conn, u8_t err)
+{
+	if (err) {
+		printf("Bluetooth connect failed: %d\n", err);
+		return;
+	}
+	printf("Bluetooth connected\n");
+}
+
+static void bt_disconnected_cb(struct bt_conn *conn, u8_t reason)
+{
+	printf("Bluetooth disconnected: %d\n", reason);
+}
+
+static struct bt_conn_cb bt_conn_callbacks = {
+	.connected = bt_connected_cb,
+	.disconnected = bt_disconnected_cb,
+};
+
 void main(void)
 {
 	int err;
@@ -35,6 +55,8 @@ void main(void)
 	err = bt_enable(bt_ready_cb);
 	if (err)
 		printf("Bluetooth enable failed: %d\n", err);
+
+	bt_conn_cb_register(&bt_conn_callbacks);
 
 	printf("Hello world!\n");
 }

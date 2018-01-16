@@ -106,5 +106,9 @@ void main(void)
 	bt_conn_cb_register(&bt_conn_callbacks);
 
 	printf("Hello world!\n");
-	printf("temp: %.2f\n", nrf_temp_get());
+
+	for (;;) {
+		k_sleep(500);
+		iaq_nrf_temp_sensor.val = nrf_temp_get() * 10;
+	}
 }

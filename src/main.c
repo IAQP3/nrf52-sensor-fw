@@ -2,6 +2,8 @@
 #include <bluetooth/conn.h>
 #include <bluetooth/gatt.h>
 
+#include <nrf.h>
+
 #include <stdio.h>
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
@@ -62,6 +64,14 @@ static struct bt_conn_cb bt_conn_callbacks = {
 	.disconnected = bt_disconnected_cb,
 };
 
+static float nrf_temp_get(void)
+{
+	NRF_TEMP->TASKS_START = 1;
+	while (!NRF_TEMP->EVENTS_DATARDY)
+		;
+	return NRF_TEMP->TEMP * 0.25f;
+}
+
 void main(void)
 {
 	int err;
@@ -73,4 +83,5 @@ void main(void)
 	bt_conn_cb_register(&bt_conn_callbacks);
 
 	printf("Hello world!\n");
+	printf("temp: %.2f\n", nrf_temp_get());
 }

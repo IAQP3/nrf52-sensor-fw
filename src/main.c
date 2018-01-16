@@ -1,5 +1,7 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
+#include <bluetooth/gatt.h>
+
 #include <stdio.h>
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
@@ -14,10 +16,22 @@ static const struct bt_data bt_sd[] = {
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
 };
 
+static struct bt_gatt_attr bt_ess_attrs[] = {
+	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),
+};
+
+static struct bt_gatt_service bt_ess_svc = BT_GATT_SERVICE(bt_ess_attrs);
+
 static void bt_ready_cb(int err)
 {
 	if (err) {
 		printf("Bluetooth init failed: %d\n", err);
+		return;
+	}
+
+	err = bt_gatt_service_register(&bt_ess_svc);
+	if (err) {
+		printf("Registering GATT services failed: %d\n", err);
 		return;
 	}
 

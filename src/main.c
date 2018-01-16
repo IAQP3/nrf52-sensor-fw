@@ -1,10 +1,12 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
 #include <bluetooth/gatt.h>
+#include <bluetooth/uuid.h>
 
 #include <nrf.h>
 
 #include <stdio.h>
+#include <misc/byteorder.h>
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
@@ -18,8 +20,29 @@ static const struct bt_data bt_sd[] = {
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
 };
 
+struct iaq_sensor {
+	s16_t val;
+};
+
+struct iaq_sensor iaq_nrf_temp_sensor;
+
+static ssize_t read_u16(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                        void *buf, u16_t len, u16_t offset)
+{
+        const u16_t *u16 = attr->user_data;
+        u16_t value = sys_cpu_to_le16(*u16);
+
+        return bt_gatt_attr_read(conn, attr, buf, len, offset, &value,
+                                 sizeof(value));
+}
+
 static struct bt_gatt_attr bt_ess_attrs[] = {
 	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),
+	BT_GATT_CHARACTERISTIC(BT_UUID_TEMPERATURE,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(BT_UUID_TEMPERATURE, BT_GATT_PERM_READ,
+			   read_u16, NULL, &iaq_nrf_temp_sensor.val),
+	BT_GATT_CUD("On-Chip temperature", BT_GATT_PERM_READ),
 };
 
 static struct bt_gatt_service bt_ess_svc = BT_GATT_SERVICE(bt_ess_attrs);

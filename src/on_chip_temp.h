@@ -4,7 +4,7 @@
 #include <bluetooth/uuid.h>
 #include <sys/types.h>
 
-float on_chip_temp_get(void);
+s32_t on_chip_temp_get(void);
 int on_chip_temp_init(void);
 void on_chip_temp_update(void);
 

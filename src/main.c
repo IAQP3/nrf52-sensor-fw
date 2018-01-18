@@ -3,10 +3,14 @@
 
 #include <stdio.h>
 
+#include <nrf.h>
+
 #include "on_chip_temp.h"
+#include "battery_voltage.h"
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
+
 
 static const struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
@@ -25,6 +29,10 @@ static void bt_ready_cb(int err)
 	}
 
 	err = on_chip_temp_init();
+	if (err)
+		return;
+
+	err = battery_voltage_init();
 	if (err)
 		return;
 
@@ -70,5 +78,6 @@ void main(void)
 	for (;;) {
 		k_sleep(500);
 		on_chip_temp_update();
+		battery_voltage_update();
 	}
 }

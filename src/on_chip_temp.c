@@ -1,31 +1,11 @@
 #include <bluetooth/gatt.h>
-#include <misc/byteorder.h>
 #include <nrf.h>
 #include <stdio.h>
 
+#include "bt_gatt_read.h"
+
 
 static s32_t temp;
-
-/* TODO These will be useful elsewhere once there are more sensors */
-static ssize_t read_u16(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-			void *buf, u16_t len, u16_t offset)
-{
-        const u16_t *u16 = attr->user_data;
-        u16_t value = sys_cpu_to_le16(*u16);
-
-        return bt_gatt_attr_read(conn, attr, buf, len, offset, &value,
-                                 sizeof(value));
-}
-
-static ssize_t read_u32(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-			void *buf, u16_t len, u16_t offset)
-{
-        const u32_t *u32 = attr->user_data;
-        u32_t value = sys_cpu_to_le16(*u32);
-
-        return bt_gatt_attr_read(conn, attr, buf, len, offset, &value,
-                                 sizeof(value));
-}
 
 static struct bt_gatt_attr on_chip_temp_bt_ess_attrs[] = {
 	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),

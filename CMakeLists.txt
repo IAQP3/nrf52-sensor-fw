@@ -3,4 +3,5 @@ project(NONE)
 
 target_sources(app PRIVATE
 	       src/main.c
-	       src/on_chip_temp.c)
+	       src/on_chip_temp.c
+	       src/bt_gatt_read.c)

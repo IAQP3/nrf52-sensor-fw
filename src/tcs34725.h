@@ -1,0 +1,47 @@
+#ifndef TCS34725_H
+#define TCS34725_H
+
+#include <device.h>
+
+#define TCS34725_ADDRESS	0x29
+
+#define TCS34725_COMMAND	0x80
+
+enum tcs34725_reg {
+	TCS34725_ENABLE	= 0x00 | TCS34725_COMMAND,
+	TCS34725_ID	= 0x12 | TCS34725_COMMAND,
+	TCS34725_CDATA	= 0x14 | TCS34725_COMMAND,
+	TCS34725_CDATAH	= 0x15 | TCS34725_COMMAND,
+	TCS34725_RDATA	= 0x16 | TCS34725_COMMAND,
+	TCS34725_RDATAH	= 0x17 | TCS34725_COMMAND,
+	TCS34725_GDATA	= 0x18 | TCS34725_COMMAND,
+	TCS34725_GDATAH	= 0x19 | TCS34725_COMMAND,
+	TCS34725_BDATA	= 0x1a | TCS34725_COMMAND,
+	TCS34725_BDATAH	= 0x1b | TCS34725_COMMAND,
+};
+
+enum tcs34725_enable_bit {
+	TCS34725_ENABLE_PON	= 1<<0,
+	TCS34725_ENABLE_AEN	= 1<<1,
+};
+
+enum tcs34725_gain {
+	TCS34725_GAIN_1		= 0,
+	TCS34725_GAIN_4		= 1,
+	TCS34725_GAIN_16	= 2,
+	TCS34725_GAIN_60	= 3,
+};
+
+struct tcs34725_sample {
+	uint16_t c;
+	uint16_t r;
+	uint16_t g;
+	uint16_t b;
+} __attribute__((packed));
+
+struct tcs34725_data {
+	struct device *i2c;
+	struct tcs34725_sample sample;
+};
+
+#endif

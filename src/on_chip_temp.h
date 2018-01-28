@@ -4,7 +4,8 @@
 #include <sys/types.h>
 
 
-s32_t on_chip_temp_get(void);
+/* Temperature in Centicelsius */
+s16_t on_chip_temp_get(void);
 int on_chip_temp_init(void);
 void on_chip_temp_update(void);
 

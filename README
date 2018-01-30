@@ -24,6 +24,8 @@ $ cmake -DBOARD=nrf52_pca10040 ..
 $ make
 $ make flash
 
+The build process for Thingy52 is the same, except BOARD=nrf52_pca20020.
+
 References:
 
 [1] http://docs.zephyrproject.org/getting_started/getting_started.html

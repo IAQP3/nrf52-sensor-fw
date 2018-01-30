@@ -33,11 +33,11 @@ int battery_voltage_init(void)
 	return 0;
 }
 
-unsigned battery_voltage_get(void)
+unsigned int battery_voltage_get(void)
 {
-	unsigned bat_adc;
+	u32_t bat_adc;
 
-	NRF_SAADC->ENABLE = 1; // nope
+	NRF_SAADC->ENABLE = 1;
 
 	/* RESP VDD/2, RESN GND, GAIN: 1/4 */
 	NRF_SAADC->CH[0].CONFIG = (3<<0) | (1<<4) | (2<<8);

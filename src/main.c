@@ -64,6 +64,28 @@ static struct bt_conn_cb bt_conn_callbacks = {
 	.disconnected = bt_disconnected_cb,
 };
 
+static void gpio_test(void)
+{
+	struct device *gpio;
+	gpio = device_get_binding(CONFIG_GPIO_SX1509B_DEV_NAME);
+	if (!gpio) {
+		printf("Failed to get SX1509B device binding: %s\n",
+				CONFIG_GPIO_SX1509B_DEV_NAME);
+		return;
+	}
+
+	gpio_port_configure(gpio, GPIO_DIR_OUT | GPIO_PUD_PULL_UP);
+
+	for (int i = 0; i < 16; ++i) {
+		gpio_pin_write(gpio, i, 0); // red
+		k_sleep(500);
+	}
+
+	k_sleep(1000);
+
+	gpio_port_write(gpio, 0xffff);
+}
+
 static void color_test(void)
 {
 	struct sensor_value r, g, b;
@@ -93,6 +115,8 @@ void main(void)
 	bt_conn_cb_register(&bt_conn_callbacks);
 
 	printf("Hello world!\n");
+
+	gpio_test();
 
 	for (;;) {
 		k_sleep(500);

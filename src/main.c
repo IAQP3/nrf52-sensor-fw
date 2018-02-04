@@ -74,10 +74,9 @@ static void gpio_test(void)
 		return;
 	}
 
-	gpio_port_configure(gpio, GPIO_DIR_OUT | GPIO_PUD_PULL_UP);
-
-	for (int i = 0; i < 16; ++i) {
-		gpio_pin_write(gpio, i, 0); // red
+	for (int i = 5; i < 8; ++i) {
+		gpio_pin_configure(gpio, i, GPIO_DIR_OUT | GPIO_PUD_PULL_UP);
+		gpio_pin_write(gpio, i, 0);
 		k_sleep(500);
 	}
 

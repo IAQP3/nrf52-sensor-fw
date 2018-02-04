@@ -1,9 +1,8 @@
+#include <stdio.h>
+
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
 #include <sensor.h>
-
-#include <stdio.h>
-
 #include <nrf.h>
 
 #include "on_chip_temp.h"
@@ -12,7 +11,6 @@
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
-
 
 static const struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
@@ -65,10 +63,9 @@ static struct bt_conn_cb bt_conn_callbacks = {
 	.disconnected = bt_disconnected_cb,
 };
 
-/* TODO Remove */
-static void test_color(void)
+static void color_test(void)
 {
-	struct sensor_value r;
+	struct sensor_value r, g, b;
 	struct device *dev;
 
 	dev = device_get_binding("TCS34725");
@@ -78,8 +75,10 @@ static void test_color(void)
 	}
 
 	sensor_channel_get(dev, SENSOR_CHAN_RED, &r);
+	sensor_channel_get(dev, SENSOR_CHAN_GREEN, &g);
+	sensor_channel_get(dev, SENSOR_CHAN_BLUE, &b);
 
-	printf("red: %d\n", r.val1);
+	printf("r: %d, g: %d, b: %d\n", r.val1, g.val1, b.val1);
 }
 
 void main(void)
@@ -98,7 +97,6 @@ void main(void)
 		k_sleep(500);
 		on_chip_temp_update();
 		battery_voltage_update();
-
-		test_color();
+		color_test();
 	}
 }

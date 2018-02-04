@@ -8,6 +8,7 @@
 #include "on_chip_temp.h"
 #include "battery_voltage.h"
 #include "tcs34725.h"
+#include "pwr_ctrl.h"
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)

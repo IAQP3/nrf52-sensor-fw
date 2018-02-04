@@ -10,9 +10,15 @@ struct pwr_ctrl_pin {
 	u32_t cfg;
 };
 
-struct pwr_ctrl_pin pwr_ctrl_vdd_pin = {
+static const struct pwr_ctrl_pin pwr_ctrl_vdd_pin = {
 	.port = CONFIG_GPIO_NRF5_P0_DEV_NAME,
 	.pin = 30,
+	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
+};
+
+static const struct pwr_ctrl_pin pwr_ctrl_ccs_pin = {
+	.port = CONFIG_GPIO_SX1509B_DEV_NAME,
+	.pin = 10,
 	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
 };
 
@@ -43,5 +49,8 @@ static int pwr_ctrl_init(struct device *dev)
 
 DEVICE_INIT(pwr_ctrl_vdd, "PWR_CTRL_VDD", pwr_ctrl_init, NULL,
 	    &pwr_ctrl_vdd_pin, POST_KERNEL, 50);
+
+DEVICE_INIT(pwr_ctrl_ccs, "PWR_CTRL_CCS", pwr_ctrl_init, NULL,
+	    &pwr_ctrl_ccs_pin, POST_KERNEL, 80);
 
 #endif

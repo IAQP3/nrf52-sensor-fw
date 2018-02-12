@@ -64,6 +64,7 @@ static struct bt_conn_cb bt_conn_callbacks = {
 	.disconnected = bt_disconnected_cb,
 };
 
+#ifdef CONFIG_BOARD_NRF52_PCA20020
 static void gpio_test(void)
 {
 	struct device *gpio;
@@ -84,6 +85,11 @@ static void gpio_test(void)
 
 	gpio_port_write(gpio, 0xffff);
 }
+#else
+static void gpio_test(void)
+{
+}
+#endif
 
 static void color_test(void)
 {

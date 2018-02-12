@@ -10,18 +10,6 @@ struct pwr_ctrl_pin {
 	u32_t cfg;
 };
 
-static const struct pwr_ctrl_pin pwr_ctrl_vdd_pin = {
-	.port = CONFIG_GPIO_NRF5_P0_DEV_NAME,
-	.pin = 30,
-	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
-};
-
-static const struct pwr_ctrl_pin pwr_ctrl_ccs_pin = {
-	.port = CONFIG_GPIO_SX1509B_DEV_NAME,
-	.pin = 10,
-	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
-};
-
 static int pwr_ctrl_init(struct device *dev)
 {
 	const struct pwr_ctrl_pin *pin = dev->config->config_info;
@@ -47,10 +35,24 @@ static int pwr_ctrl_init(struct device *dev)
 	return 0;
 }
 
+#ifdef CONFIG_BOARD_NRF52_PCA20020
+static const struct pwr_ctrl_pin pwr_ctrl_vdd_pin = {
+	.port = CONFIG_GPIO_NRF5_P0_DEV_NAME,
+	.pin = 30,
+	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
+};
+
 DEVICE_INIT(pwr_ctrl_vdd, "PWR_CTRL_VDD", pwr_ctrl_init, NULL,
 	    &pwr_ctrl_vdd_pin, POST_KERNEL, 50);
 
+static const struct pwr_ctrl_pin pwr_ctrl_ccs_pin = {
+	.port = CONFIG_GPIO_SX1509B_DEV_NAME,
+	.pin = 10,
+	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
+};
+
 DEVICE_INIT(pwr_ctrl_ccs, "PWR_CTRL_CCS", pwr_ctrl_init, NULL,
 	    &pwr_ctrl_ccs_pin, POST_KERNEL, 80);
+#endif
 
 #endif

@@ -91,9 +91,10 @@ static void gpio_test(void)
 		k_sleep(500);
 	}
 
-	k_sleep(1000);
+	k_sleep(500);
 
-	gpio_port_write(gpio, 0xffff);
+	for (int i = 5; i < 8; ++i)
+		gpio_pin_write(gpio, i, 1);
 }
 #else
 static void gpio_test(void)

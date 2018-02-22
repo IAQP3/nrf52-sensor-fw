@@ -9,6 +9,7 @@
 #include "battery_voltage.h"
 #include "tcs34725.h"
 #include "pwr_ctrl.h"
+#include "hts221_bt.h"
 
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
@@ -34,6 +35,10 @@ static void bt_ready_cb(int err)
 		return;
 
 	err = battery_voltage_init();
+	if (err)
+		return;
+
+	err = hts221_bt_init();
 	if (err)
 		return;
 
@@ -127,6 +132,7 @@ void main(void)
 		k_sleep(500);
 		on_chip_temp_update();
 		battery_voltage_update();
+		hts221_bt_update();
 		color_test();
 	}
 }

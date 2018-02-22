@@ -6,4 +6,6 @@ target_sources(app PRIVATE
 	       src/on_chip_temp.c
 	       src/bt_gatt_read.c
 	       src/battery_voltage.c
-	       src/tcs34725.c)
+	       src/tcs34725.c
+	       src/hts221_bt.c
+)

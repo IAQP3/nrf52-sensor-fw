@@ -8,4 +8,5 @@ target_sources(app PRIVATE
 	       src/battery_voltage.c
 	       src/tcs34725.c
 	       src/hts221_bt.c
+	       src/ccs811_bt.c
 )

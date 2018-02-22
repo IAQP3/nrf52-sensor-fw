@@ -48,11 +48,21 @@ DEVICE_INIT(pwr_ctrl_vdd, "PWR_CTRL_VDD", pwr_ctrl_init, NULL,
 static const struct pwr_ctrl_pin pwr_ctrl_ccs_pin = {
 	.port = CONFIG_GPIO_SX1509B_DEV_NAME,
 	.pin = 10,
-	.cfg = GPIO_DIR_OUT | GPIO_PUD_PULL_UP,
+	.cfg = GPIO_DIR_OUT,
 };
 
 DEVICE_INIT(pwr_ctrl_ccs, "PWR_CTRL_CCS", pwr_ctrl_init, NULL,
 	    &pwr_ctrl_ccs_pin, POST_KERNEL, 80);
+
+/* TODO Add reset pin handling to the driver */
+static const struct pwr_ctrl_pin pwr_ctrl_ccs_reset = {
+	.port = CONFIG_GPIO_SX1509B_DEV_NAME,
+	.pin = 11,
+	.cfg = GPIO_DIR_OUT,
+};
+
+DEVICE_INIT(pwr_ctrl_ccs_reset, "PWR_CTRL_CCS_RESET", pwr_ctrl_init, NULL,
+	    &pwr_ctrl_ccs_reset, POST_KERNEL, 81);
 #endif
 
 #endif

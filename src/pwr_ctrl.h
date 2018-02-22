@@ -4,6 +4,10 @@
 #include <device.h>
 #include <gpio.h>
 
+#define SYS_LOG_DOMAIN "pwr_ctrl"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 struct pwr_ctrl_pin {
 	const char *port;
 	u32_t pin;
@@ -18,7 +22,7 @@ static int pwr_ctrl_init(struct device *dev)
 
 	gpio = device_get_binding(pin->port);
 	if (!gpio) {
-		printf("Could not bind device \"%s\"\n", pin->port);
+		SYS_LOG_ERR("Could not bind device \"%s\"\n", pin->port);
 		return -ENODEV;
 	}
 
@@ -64,5 +68,7 @@ static const struct pwr_ctrl_pin pwr_ctrl_ccs_reset = {
 DEVICE_INIT(pwr_ctrl_ccs_reset, "PWR_CTRL_CCS_RESET", pwr_ctrl_init, NULL,
 	    &pwr_ctrl_ccs_reset, POST_KERNEL, 81);
 #endif
+
+#undef SYS_LOG_DOMAIN
 
 #endif

@@ -5,6 +5,10 @@
 
 #include "bt_gatt_read.h"
 
+#define SYS_LOG_DOMAIN "HTS221_BT"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 static s16_t temp;
 static u16_t humid;
 struct device *dev;
@@ -37,7 +41,7 @@ void hts221_bt_update(void)
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
-		printf("HTS221 sample fetch failed\n");
+		SYS_LOG_ERR("HTS221 sample fetch failed\n");
 		return;
 	}
 
@@ -54,19 +58,19 @@ void hts221_bt_init(void)
 
 	dev = device_get_binding("HTS221");
 	if (!dev) {
-		printf("Failed to get HTS221 device binding\n");
+		SYS_LOG_ERR("Failed to get HTS221 device binding\n");
 		return;
 	}
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
-		printf("HTS221 sample fetch failed\n");
+		SYS_LOG_ERR("HTS221 sample fetch failed\n");
 		return;
 	}
 
 	err = bt_gatt_service_register(&hts221_bt_ess_svc);
 	if (err) {
-		printf("Registering HTS221 GATT services failed: %d\n", err);
+		SYS_LOG_ERR("Registering HTS221 GATT services failed: %d\n", err);
 		return;
 	}
 }

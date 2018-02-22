@@ -5,6 +5,10 @@
 
 #include "tcs34725.h"
 
+#define SYS_LOG_DOMAIN "TCS34725"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 static int tcs34725_init(struct device *dev)
 {
 	struct tcs34725_data *data = dev->driver_data;
@@ -14,7 +18,7 @@ static int tcs34725_init(struct device *dev)
 	/* TODO make this configurable */
 	data->i2c = device_get_binding(CONFIG_I2C_0_NAME);
 	if (!data->i2c) {
-		printf("Failed to get device binding\n");
+		SYS_LOG_ERR("Failed to get device binding\n");
 		return -ENODEV;
 	}
 
@@ -23,21 +27,19 @@ static int tcs34725_init(struct device *dev)
 
 	err = i2c_reg_read_byte(data->i2c, TCS34725_ADDRESS, TCS34725_ID, &id);
 	if (err < 0) {
-		printf("Reading tcs34725 id register failed: %d\n", err);
+		SYS_LOG_ERR("Reading tcs34725 id register failed: %d\n", err);
 		return err;
 	}
 
-	printf("id: 0x%x\n", id);
-
 	if (id != 0x44 && id != 0x4d) {
-		printf("Invalid tcs34725 id: 0x%02x\n", id);
+		SYS_LOG_ERR("Invalid tcs34725 id: 0x%02x\n", id);
 		return err;
 	}
 
 	err = i2c_reg_write_byte(data->i2c, TCS34725_ADDRESS, TCS34725_ENABLE,
 				 TCS34725_ENABLE_PON | TCS34725_ENABLE_AEN);
 	if (err) {
-		printf("Enabling tcs34725 failed\n");
+		SYS_LOG_ERR("Enabling tcs34725 failed\n");
 		return err;
 	}
 
@@ -56,7 +58,7 @@ static int tcs34725_sample_fetch(struct device *dev, enum sensor_channel chan)
 	err = i2c_burst_read(i2c, TCS34725_ADDRESS, TCS34725_CDATA,
 			     (u8_t *)&sample, sizeof(sample));
 	if (err) {
-		printf("Reading the color sensor failed: %d\n", err);
+		SYS_LOG_ERR("Reading the color sensor failed: %d\n", err);
 		return err;
 	}
 
@@ -85,7 +87,7 @@ static int tcs34725_channel_get(struct device *dev, enum sensor_channel chan,
 	err = i2c_burst_read(i2c, TCS34725_ADDRESS, reg, (u8_t *)&sample,
 			     sizeof(sample));
 	if (err) {
-		printf("Reading the color sensor failed: %d\n", err);
+		SYS_LOG_ERR("Reading the color sensor failed: %d\n", err);
 		return err;
 	}
 

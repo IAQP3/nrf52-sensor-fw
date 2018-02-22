@@ -12,6 +12,10 @@
 #include "hts221_bt.h"
 #include "ccs811_bt.h"
 
+#define SYS_LOG_DOMAIN "main"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
 
@@ -27,7 +31,7 @@ static const struct bt_data bt_sd[] = {
 static void bt_ready_cb(int err)
 {
 	if (err) {
-		printf("Bluetooth init failed: %d\n", err);
+		SYS_LOG_ERR("Bluetooth init failed: %d", err);
 		return;
 	}
 
@@ -50,7 +54,7 @@ static void bt_ready_cb(int err)
 	err = bt_le_adv_start(BT_LE_ADV_CONN, bt_ad, ARRAY_SIZE(bt_ad),
 			      bt_sd, ARRAY_SIZE(bt_sd));
 	if (err) {
-		printf("Bluetooth advertising start failed: %d\n", err);
+		SYS_LOG_ERR("Bluetooth advertising start failed: %d", err);
 		return;
 	}
 }
@@ -58,15 +62,15 @@ static void bt_ready_cb(int err)
 static void bt_connected_cb(struct bt_conn *conn, u8_t err)
 {
 	if (err) {
-		printf("Bluetooth connect failed: %d\n", err);
+		SYS_LOG_ERR("Bluetooth connect failed: %d", err);
 		return;
 	}
-	printf("Bluetooth connected\n");
+	SYS_LOG_DBG("Bluetooth connected\n");
 }
 
 static void bt_disconnected_cb(struct bt_conn *conn, u8_t reason)
 {
-	printf("Bluetooth disconnected: %d\n", reason);
+	SYS_LOG_DBG("Bluetooth disconnected: %d", reason);
 }
 
 static struct bt_conn_cb bt_conn_callbacks = {
@@ -80,8 +84,8 @@ static void gpio_test(void)
 	struct device *gpio;
 	gpio = device_get_binding(CONFIG_GPIO_SX1509B_DEV_NAME);
 	if (!gpio) {
-		printf("Failed to get SX1509B device binding: %s\n",
-				CONFIG_GPIO_SX1509B_DEV_NAME);
+		SYS_LOG_ERR("Failed to get SX1509B device binding: %s",
+			    CONFIG_GPIO_SX1509B_DEV_NAME);
 		return;
 	}
 
@@ -109,7 +113,7 @@ static void color_test(void)
 
 	dev = device_get_binding("TCS34725");
 	if (!dev) {
-		printf("Failed to get TCS34725H device binding\n");
+		SYS_LOG_ERR("Failed to get TCS34725H device binding");
 		return;
 	}
 
@@ -117,7 +121,7 @@ static void color_test(void)
 	sensor_channel_get(dev, SENSOR_CHAN_GREEN, &g);
 	sensor_channel_get(dev, SENSOR_CHAN_BLUE, &b);
 
-	printf("r: %d, g: %d, b: %d\n", r.val1, g.val1, b.val1);
+	SYS_LOG_INF("r: %d, g: %d, b: %d", r.val1, g.val1, b.val1);
 }
 
 void main(void)
@@ -126,13 +130,13 @@ void main(void)
 
 	err = bt_enable(bt_ready_cb);
 	if (err)
-		printf("Bluetooth enable failed: %d\n", err);
+		SYS_LOG_ERR("Bluetooth enable failed: %d", err);
 
 	bt_conn_cb_register(&bt_conn_callbacks);
 
-	printf("Hello world!\n");
-
 	gpio_test();
+
+	SYS_LOG_INF("Entering measurement loop");
 
 	for (;;) {
 		k_sleep(500);

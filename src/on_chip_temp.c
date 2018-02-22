@@ -4,6 +4,10 @@
 
 #include "bt_gatt_read.h"
 
+#define SYS_LOG_DOMAIN "on_chip_temp"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 static s16_t temp;
 
 static struct bt_gatt_attr on_chip_temp_bt_ess_attrs[] = {
@@ -32,7 +36,7 @@ int on_chip_temp_init(void)
 
 	err = bt_gatt_service_register(&on_chip_temp_bt_ess_svc);
 	if (err) {
-		printf("Registering nRF TEMP GATT services failed: %d\n", err);
+		SYS_LOG_ERR("Registering nRF TEMP GATT services failed: %d", err);
 		return -1;
 	}
 	return 0;

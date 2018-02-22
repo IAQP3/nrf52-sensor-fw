@@ -5,6 +5,10 @@
 
 #include "bt_gatt_read.h"
 
+#define SYS_LOG_DOMAIN "CCS811_BT"
+#define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
+#include <logging/sys_log.h>
+
 static u16_t co2; /* In ppb */
 static u16_t voc; /* In ppb */
 struct device *dev;
@@ -40,7 +44,7 @@ void ccs811_bt_update(void)
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
-		printf("CCS811 sample fetch failed\n");
+		SYS_LOG_ERR("CCS811 sample fetch failed");
 		return;
 	}
 
@@ -57,19 +61,19 @@ int ccs811_bt_init(void)
 
 	dev = device_get_binding("HTS221");
 	if (!dev) {
-		printf("Failed to get HTS221 device binding\n");
+		SYS_LOG_ERR("Failed to get HTS221 device binding");
 		return -1;
 	}
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
-		printf("HTS221 sample fetch failed\n");
+		SYS_LOG_ERR("HTS221 sample fetch failed");
 		return -1;
 	}
 
 	err = bt_gatt_service_register(&ccs811_bt_svc);
 	if (err) {
-		printf("Registering HTS221 GATT services failed: %d\n", err);
+		SYS_LOG_ERR("Registering HTS221 GATT services failed: %d", err);
 		return -1;
 	}
 

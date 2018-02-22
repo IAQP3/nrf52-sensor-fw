@@ -35,21 +35,10 @@ static void bt_ready_cb(int err)
 		return;
 	}
 
-	err = on_chip_temp_init();
-	if (err)
-		return;
-
-	err = battery_voltage_init();
-	if (err)
-		return;
-
-	err = hts221_bt_init();
-	if (err)
-		return;
-
-	err = ccs811_bt_init();
-	if (err)
-		return;
+	on_chip_temp_init();
+	battery_voltage_init();
+	hts221_bt_init();
+	ccs811_bt_init();
 
 	err = bt_le_adv_start(BT_LE_ADV_CONN, bt_ad, ARRAY_SIZE(bt_ad),
 			      bt_sd, ARRAY_SIZE(bt_sd));

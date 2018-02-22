@@ -55,27 +55,23 @@ void ccs811_bt_update(void)
 	voc = sensor_value_to_double(&voc_val);
 }
 
-int ccs811_bt_init(void)
+void ccs811_bt_init(void)
 {
 	int err;
 
 	dev = device_get_binding("HTS221");
 	if (!dev) {
 		SYS_LOG_ERR("Failed to get HTS221 device binding");
-		return -1;
+		return;
 	}
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
 		SYS_LOG_ERR("HTS221 sample fetch failed");
-		return -1;
+		return;
 	}
 
 	err = bt_gatt_service_register(&ccs811_bt_svc);
-	if (err) {
+	if (err)
 		SYS_LOG_ERR("Registering HTS221 GATT services failed: %d", err);
-		return -1;
-	}
-
-	return 0;
 }

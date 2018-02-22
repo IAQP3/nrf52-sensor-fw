@@ -4,6 +4,6 @@
 #include <sys/types.h>
 
 void hts221_bt_update(void);
-int hts221_bt_init(void);
+void hts221_bt_init(void);
 
 #endif

@@ -23,17 +23,14 @@ static struct bt_gatt_attr battery_voltage_bt_ess_attrs[] = {
 static struct bt_gatt_service battery_voltage_bt_ess_svc =
 		BT_GATT_SERVICE(battery_voltage_bt_ess_attrs);
 
-int battery_voltage_init(void)
+void battery_voltage_init(void)
 {
 	int err;
 
 	err = bt_gatt_service_register(&battery_voltage_bt_ess_svc);
-	if (err) {
-		SYS_LOG_ERR("Registering nRF Battery Voltage GATT services failed: %d\n",
+	if (err)
+		SYS_LOG_ERR("Registering nRF Battery Voltage GATT services failed: %d",
 		       err);
-		return -1;
-	}
-	return 0;
 }
 
 unsigned int battery_voltage_get(void)

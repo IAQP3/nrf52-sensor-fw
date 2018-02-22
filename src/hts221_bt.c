@@ -69,8 +69,6 @@ void hts221_bt_init(void)
 	}
 
 	err = bt_gatt_service_register(&hts221_bt_ess_svc);
-	if (err) {
+	if (err)
 		SYS_LOG_ERR("Registering HTS221 GATT services failed: %d\n", err);
-		return;
-	}
 }

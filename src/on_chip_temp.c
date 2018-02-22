@@ -30,16 +30,13 @@ s16_t on_chip_temp_get(void)
 	return NRF_TEMP->TEMP * 25;
 }
 
-int on_chip_temp_init(void)
+void on_chip_temp_init(void)
 {
 	int err;
 
 	err = bt_gatt_service_register(&on_chip_temp_bt_ess_svc);
-	if (err) {
+	if (err)
 		SYS_LOG_ERR("Registering nRF TEMP GATT services failed: %d", err);
-		return -1;
-	}
-	return 0;
 }
 
 void on_chip_temp_update(void)

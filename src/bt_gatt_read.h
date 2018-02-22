@@ -3,7 +3,6 @@
 
 #include <zephyr/types.h>
 
-
 ssize_t read_u16(struct bt_conn *conn, const struct bt_gatt_attr *attr,
 		 void *buf, u16_t len, u16_t offset);
 

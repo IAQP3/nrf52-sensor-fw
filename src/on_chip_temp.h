@@ -3,7 +3,6 @@
 
 #include <sys/types.h>
 
-
 /* Temperature in Centicelsius */
 s16_t on_chip_temp_get(void);
 int on_chip_temp_init(void);

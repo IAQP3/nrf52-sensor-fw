@@ -4,7 +4,6 @@
 
 #include "bt_gatt_read.h"
 
-
 static s16_t temp;
 
 static struct bt_gatt_attr on_chip_temp_bt_ess_attrs[] = {
@@ -43,4 +42,3 @@ void on_chip_temp_update(void)
 {
 	temp = on_chip_temp_get();
 }
-

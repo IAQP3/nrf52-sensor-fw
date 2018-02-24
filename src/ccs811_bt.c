@@ -48,8 +48,8 @@ void ccs811_bt_update(void)
 		return;
 	}
 
-	sensor_channel_get(dev, SENSOR_CHAN_TEMP, &co2_val);
-	sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &voc_val);
+	sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2_val);
+	sensor_channel_get(dev, SENSOR_CHAN_VOC, &voc_val);
 
 	co2 = sensor_value_to_double(&co2_val) * 1000;
 	voc = sensor_value_to_double(&voc_val);
@@ -59,19 +59,19 @@ void ccs811_bt_init(void)
 {
 	int err;
 
-	dev = device_get_binding("HTS221");
+	dev = device_get_binding("CCS811");
 	if (!dev) {
-		SYS_LOG_ERR("Failed to get HTS221 device binding");
+		SYS_LOG_ERR("Failed to get CCS811 device binding");
 		return;
 	}
 
 	err = sensor_sample_fetch(dev);
 	if (err) {
-		SYS_LOG_ERR("HTS221 sample fetch failed");
+		SYS_LOG_ERR("CCS811 sample fetch failed");
 		return;
 	}
 
 	err = bt_gatt_service_register(&ccs811_bt_svc);
 	if (err)
-		SYS_LOG_ERR("Registering HTS221 GATT services failed: %d", err);
+		SYS_LOG_ERR("Registering CCS811 GATT services failed: %d", err);
 }

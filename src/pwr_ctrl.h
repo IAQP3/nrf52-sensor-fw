@@ -34,7 +34,7 @@ static int pwr_ctrl_init(struct device *dev)
 	if (ret)
 		return ret;
 
-	k_sleep(100); /* Wait for the rail to compe up and stabilize */
+	k_sleep(10); /* Wait for the rail to compe up and stabilize */
 
 	return 0;
 }

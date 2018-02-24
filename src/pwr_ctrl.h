@@ -70,5 +70,6 @@ DEVICE_INIT(pwr_ctrl_ccs_reset, "PWR_CTRL_CCS_RESET", pwr_ctrl_init, NULL,
 #endif
 
 #undef SYS_LOG_DOMAIN
+#undef SYS_LOG_LEVEL
 
 #endif

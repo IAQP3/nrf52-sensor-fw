@@ -71,27 +71,15 @@ static int tcs34725_channel_get(struct device *dev, enum sensor_channel chan,
 				struct sensor_value *val)
 {
 	struct tcs34725_data *data = dev->driver_data;
-	struct device *i2c = data->i2c;
-	enum tcs34725_reg reg;
-	u16_t sample;
-	int err;
 
 	switch (chan) {
-	case SENSOR_CHAN_LIGHT:	reg = TCS34725_CDATA; break;
-	case SENSOR_CHAN_RED:	reg = TCS34725_RDATA; break;
-	case SENSOR_CHAN_GREEN:	reg = TCS34725_GDATA; break;
-	case SENSOR_CHAN_BLUE:	reg = TCS34725_BDATA; break;
+	case SENSOR_CHAN_LIGHT:	val->val1 = data->sample.c; break;
+	case SENSOR_CHAN_RED:	val->val1 = data->sample.r; break;
+	case SENSOR_CHAN_GREEN:	val->val1 = data->sample.g; break;
+	case SENSOR_CHAN_BLUE:	val->val1 = data->sample.b; break;
 	default: return -ENOTSUP;
 	}
 
-	err = i2c_burst_read(i2c, TCS34725_ADDRESS, reg, (u8_t *)&sample,
-			     sizeof(sample));
-	if (err) {
-		SYS_LOG_ERR("Reading the color sensor failed: %d\n", err);
-		return err;
-	}
-
-	val->val1 = sample;
 	val->val2 = 0;
 
 	return 0;

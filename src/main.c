@@ -99,12 +99,17 @@ static void color_test(void)
 {
 	struct sensor_value r, g, b;
 	struct device *dev;
+	int err;
 
 	dev = device_get_binding("TCS34725");
 	if (!dev) {
 		SYS_LOG_ERR("Failed to get TCS34725H device binding");
 		return;
 	}
+
+	err = sensor_sample_fetch(dev);
+	if (err)
+		return;
 
 	sensor_channel_get(dev, SENSOR_CHAN_RED, &r);
 	sensor_channel_get(dev, SENSOR_CHAN_GREEN, &g);

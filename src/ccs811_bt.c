@@ -9,7 +9,7 @@
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
-static u16_t co2; /* In ppb */
+static u16_t co2; /* In ppm */
 static u16_t voc; /* In ppb */
 struct device *dev;
 
@@ -51,8 +51,10 @@ void ccs811_bt_update(void)
 	sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2_val);
 	sensor_channel_get(dev, SENSOR_CHAN_VOC, &voc_val);
 
-	co2 = sensor_value_to_double(&co2_val) * 1000;
-	voc = sensor_value_to_double(&voc_val);
+	co2 = co2_val.val1;
+	voc = voc_val.val1;
+
+	SYS_LOG_INF("co2: %d, voc: %d\n", co2, voc);
 }
 
 void ccs811_bt_init(void)

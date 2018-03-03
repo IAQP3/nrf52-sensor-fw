@@ -20,6 +20,7 @@ static int pwr_ctrl_init(struct device *dev)
 	struct device *gpio;
 	int ret;
 
+	SYS_LOG_INF("turning on: %s: %d", pin->port, pin->pin);
 	gpio = device_get_binding(pin->port);
 	if (!gpio) {
 		SYS_LOG_ERR("Could not bind device \"%s\"\n", pin->port);

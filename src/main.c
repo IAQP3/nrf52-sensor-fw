@@ -3,12 +3,12 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
 #include <sensor.h>
+#include <gpio.h>
 #include <nrf.h>
 
 #include "on_chip_temp.h"
 #include "battery_voltage.h"
 #include "tcs34725.h"
-#include "pwr_ctrl.h"
 #include "hts221_bt.h"
 #include "ccs811_bt.h"
 

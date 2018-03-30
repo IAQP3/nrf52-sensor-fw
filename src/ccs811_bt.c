@@ -60,6 +60,7 @@ void ccs811_bt_update(void)
 void ccs811_bt_init(void)
 {
 	int err;
+	int retry_count;
 
 	dev = device_get_binding("CCS811");
 	if (!dev) {
@@ -67,10 +68,13 @@ void ccs811_bt_init(void)
 		return;
 	}
 
-	err = sensor_sample_fetch(dev);
-	if (err) {
-		SYS_LOG_ERR("CCS811 sample fetch failed");
-		return;
+	for (retry_count = 10; retry_count; --retry_count) {
+		err = sensor_sample_fetch(dev);
+		if (err) {
+			SYS_LOG_ERR("CCS811 sample fetch failed");
+			continue;
+		}
+		break;
 	}
 
 	err = bt_gatt_service_register(&ccs811_bt_svc);

@@ -15,7 +15,7 @@ struct device *dev;
 
 #define UUID_PRIMARY	BT_UUID_DECLARE_16(0x0200)
 #define UUID_CO2	BT_UUID_DECLARE_16(0x0201)
-#define UUID_VOC	BT_UUID_DECLARE_16(0x0201)
+#define UUID_VOC	BT_UUID_DECLARE_16(0x0202)
 
 static struct bt_gatt_attr ccs811_bt_attrs[] = {
 	BT_GATT_PRIMARY_SERVICE(UUID_PRIMARY),

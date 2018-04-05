@@ -5,5 +5,7 @@
 
 void hts221_bt_update(void);
 void hts221_bt_init(void);
+s16_t hts221_bt_temp;
+u16_t hts221_bt_humid;
 
 #endif

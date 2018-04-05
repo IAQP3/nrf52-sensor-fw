@@ -1,39 +1,18 @@
-#include <bluetooth/gatt.h>
 #include <nrf.h>
 #include <stdio.h>
 
 #include "battery_voltage.h"
-#include "bt_gatt_read.h"
 
 #define SYS_LOG_DOMAIN "battery"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
-static u32_t battery_voltage;
-
-static struct bt_gatt_attr battery_voltage_bt_ess_attrs[] = {
-	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),
-	BT_GATT_CHARACTERISTIC(BT_UUID_BAS_BATTERY_LEVEL,
-			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
-	BT_GATT_DESCRIPTOR(BT_UUID_BAS_BATTERY_LEVEL, BT_GATT_PERM_READ,
-			   read_u32, NULL, &battery_voltage),
-	BT_GATT_CUD("Battery Voltage", BT_GATT_PERM_READ),
-};
-
-static struct bt_gatt_service battery_voltage_bt_ess_svc =
-		BT_GATT_SERVICE(battery_voltage_bt_ess_attrs);
-
 void battery_voltage_init(void)
 {
-	int err;
-
-	err = bt_gatt_service_register(&battery_voltage_bt_ess_svc);
-	if (err)
-		SYS_LOG_ERR("Registering nRF Battery Voltage GATT services failed: %d",
-		       err);
+	battery_voltage_update();
 }
 
-unsigned int battery_voltage_get(void)
+u16_t battery_voltage_get(void)
 {
 	u32_t bat_adc;
 

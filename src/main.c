@@ -2,6 +2,7 @@
 
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/conn.h>
+#include <bluetooth/gatt.h>
 #include <sensor.h>
 #include <gpio.h>
 #include <nrf.h>
@@ -11,6 +12,7 @@
 #include "tcs34725.h"
 #include "hts221_bt.h"
 #include "ccs811_bt.h"
+#include "bt_gatt_read.h"
 
 #define SYS_LOG_DOMAIN "main"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -28,6 +30,53 @@ static const struct bt_data bt_sd[] = {
 	BT_DATA(BT_DATA_NAME_COMPLETE, DEVICE_NAME, DEVICE_NAME_LEN),
 };
 
+static struct bt_gatt_attr bt_ess_attrs[] = {
+	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),
+
+	/* On-chip temp */
+	BT_GATT_CHARACTERISTIC(BT_UUID_TEMPERATURE,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(BT_UUID_TEMPERATURE, BT_GATT_PERM_READ, read_u16,
+			   NULL, &on_chip_temp),
+	BT_GATT_CUD("On-Chip Temperature", BT_GATT_PERM_READ),
+
+	/* Battery voltage */
+	BT_GATT_CHARACTERISTIC(BT_UUID_BAS_BATTERY_LEVEL,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(BT_UUID_BAS_BATTERY_LEVEL, BT_GATT_PERM_READ,
+			   read_u32, NULL, &battery_voltage),
+	BT_GATT_CUD("Battery Voltage", BT_GATT_PERM_READ),
+
+	/* HTS221 */
+	BT_GATT_CHARACTERISTIC(BT_UUID_TEMPERATURE,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(BT_UUID_TEMPERATURE, BT_GATT_PERM_READ, read_u16,
+			   NULL, &hts221_bt_temp),
+	BT_GATT_CUD("Temperature", BT_GATT_PERM_READ),
+
+	BT_GATT_CHARACTERISTIC(BT_UUID_HUMIDITY,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(BT_UUID_HUMIDITY, BT_GATT_PERM_READ, read_u16,
+			   NULL, &hts221_bt_humid),
+	BT_GATT_CUD("Humidity", BT_GATT_PERM_READ),
+
+	/* CCS811 */
+	BT_GATT_CHARACTERISTIC(UUID_CO2,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_CO2, BT_GATT_PERM_READ, read_u16,
+			   NULL, &ccs811_bt_co2),
+	BT_GATT_CUD("CO2", BT_GATT_PERM_READ),
+
+	BT_GATT_CHARACTERISTIC(UUID_VOC,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_VOC, BT_GATT_PERM_READ, read_u16,
+			   NULL, &ccs811_bt_voc),
+	BT_GATT_CUD("VOC", BT_GATT_PERM_READ),
+};
+
+static struct bt_gatt_service bt_ess_svc = BT_GATT_SERVICE(bt_ess_attrs);
+
+
 static void bt_ready_cb(int err)
 {
 	if (err) {
@@ -39,6 +88,13 @@ static void bt_ready_cb(int err)
 	battery_voltage_init();
 	hts221_bt_init();
 	ccs811_bt_init();
+
+	err = bt_gatt_service_register(&bt_ess_svc);
+
+	if (err) {
+		SYS_LOG_ERR("Could not register GATT service: %d", err);
+		return;
+	}
 
 	err = bt_le_adv_start(BT_LE_ADV_CONN, bt_ad, ARRAY_SIZE(bt_ad),
 			      bt_sd, ARRAY_SIZE(bt_sd));

@@ -16,7 +16,7 @@ static int tcs34725_init(struct device *dev)
 	int err;
 
 	/* TODO make this configurable */
-	data->i2c = device_get_binding(CONFIG_I2C_0_NAME);
+	data->i2c = device_get_binding(CONFIG_I2C_1_NAME);
 	if (!data->i2c) {
 		SYS_LOG_ERR("Failed to get device binding\n");
 		return -ENODEV;

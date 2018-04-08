@@ -9,4 +9,5 @@ target_sources(app PRIVATE
 	       src/tcs34725.c
 	       src/hts221_bt.c
 	       src/ccs811_bt.c
+	       src/tcs34725_bt.c
 )

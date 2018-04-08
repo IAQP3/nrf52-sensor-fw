@@ -7,11 +7,12 @@
 #include <gpio.h>
 #include <nrf.h>
 
+#include "tcs34725.h"
 #include "on_chip_temp.h"
 #include "battery_voltage.h"
-#include "tcs34725.h"
 #include "hts221_bt.h"
 #include "ccs811_bt.h"
+#include "tcs34725_bt.h"
 #include "bt_gatt_read.h"
 
 #define SYS_LOG_DOMAIN "main"
@@ -72,10 +73,34 @@ static struct bt_gatt_attr bt_ess_attrs[] = {
 	BT_GATT_DESCRIPTOR(UUID_VOC, BT_GATT_PERM_READ, read_u16,
 			   NULL, &ccs811_bt_voc),
 	BT_GATT_CUD("VOC", BT_GATT_PERM_READ),
+
+	/* TCS34725 */
+	BT_GATT_CHARACTERISTIC(UUID_RED,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_RED, BT_GATT_PERM_READ, read_u16,
+			   NULL, &tcs34725_bt_r),
+	BT_GATT_CUD("Red", BT_GATT_PERM_READ),
+
+	BT_GATT_CHARACTERISTIC(UUID_GREEN,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_GREEN, BT_GATT_PERM_READ, read_u16,
+			   NULL, &tcs34725_bt_g),
+	BT_GATT_CUD("Green", BT_GATT_PERM_READ),
+
+	BT_GATT_CHARACTERISTIC(UUID_BLUE,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_BLUE, BT_GATT_PERM_READ, read_u16,
+			   NULL, &tcs34725_bt_b),
+	BT_GATT_CUD("Blue", BT_GATT_PERM_READ),
+
+	BT_GATT_CHARACTERISTIC(UUID_LIGHT,
+			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
+	BT_GATT_DESCRIPTOR(UUID_LIGHT, BT_GATT_PERM_READ, read_u16,
+			   NULL, &tcs34725_bt_l),
+	BT_GATT_CUD("Light", BT_GATT_PERM_READ),
 };
 
 static struct bt_gatt_service bt_ess_svc = BT_GATT_SERVICE(bt_ess_attrs);
-
 
 static void bt_ready_cb(int err)
 {
@@ -88,6 +113,7 @@ static void bt_ready_cb(int err)
 	battery_voltage_init();
 	hts221_bt_init();
 	ccs811_bt_init();
+	tcs34725_bt_init();
 
 	err = bt_gatt_service_register(&bt_ess_svc);
 
@@ -194,6 +220,7 @@ void main(void)
 		battery_voltage_update();
 		hts221_bt_update();
 		ccs811_bt_update();
+		tcs34725_bt_update();
 		color_test();
 	}
 }

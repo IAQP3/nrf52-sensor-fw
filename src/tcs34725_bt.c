@@ -7,7 +7,7 @@
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
-struct device *dev;
+static struct device *dev;
 
 void tcs34725_bt_init(void)
 {

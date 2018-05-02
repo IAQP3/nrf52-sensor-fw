@@ -8,7 +8,20 @@
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
-struct device *dev;
+static struct device *dev;
+
+void hts221_bt_init(void)
+{
+	int err;
+
+	dev = device_get_binding("HTS221");
+	if (!dev) {
+		SYS_LOG_ERR("Failed to get HTS221 device binding\n");
+		return;
+	}
+
+	hts221_bt_update();
+}
 
 void hts221_bt_update(void)
 {
@@ -24,22 +37,15 @@ void hts221_bt_update(void)
 		return;
 	}
 
-	sensor_channel_get(dev, SENSOR_CHAN_TEMP, &t);
-	sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &h);
+	err = sensor_channel_get(dev, SENSOR_CHAN_AMBIENT_TEMP, &t);
+	if (err)
+		SYS_LOG_ERR("temp channel get failed");
+	err = sensor_channel_get(dev, SENSOR_CHAN_HUMIDITY, &h);
+	if (err)
+		SYS_LOG_ERR("humid channel get failed");
 
 	hts221_bt_temp = sensor_value_to_double(&t) * 100;
 	hts221_bt_humid = sensor_value_to_double(&h) * 100;
-}
-
-void hts221_bt_init(void)
-{
-	int err;
-
-	dev = device_get_binding("HTS221");
-	if (!dev) {
-		SYS_LOG_ERR("Failed to get HTS221 device binding\n");
-		return;
-	}
-
-	hts221_bt_update();
+	SYS_LOG_INF("temp: %d", t.val1);
+	SYS_LOG_INF("humid: %d", h.val1);
 }

@@ -46,6 +46,8 @@ void ccs811_bt_update(void)
 
 void ccs811_bt_init(void)
 {
+	static const struct sensor_value sampling_interval = { .val1 = 10,
+							       .val2 = 0 };
 	int retry_count;
 	int err;
 
@@ -66,6 +68,9 @@ void ccs811_bt_init(void)
 		SYS_LOG_ERR("CCS811 sample fetch failed");
 
 	ccs811_bt_update();
+
+	sensor_attr_set(dev, SENSOR_CHAN_CO2, SENSOR_ATTR_SAMPLING_INTERVAL,
+			&sampling_interval);
 }
 
 static void ccs811_bt_thread(void *p1, void *p2, void *p3)
@@ -73,8 +78,8 @@ static void ccs811_bt_thread(void *p1, void *p2, void *p3)
 	for (;;) {
 		if (!dev)
 			ccs811_bt_init();
-		ccs811_bt_update();
 		k_sleep(CCS811_BT_MEAS_INTERVAL);
+		ccs811_bt_update();
 	}
 }
 

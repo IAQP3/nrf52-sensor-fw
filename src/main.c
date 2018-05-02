@@ -76,7 +76,7 @@ static struct bt_gatt_attr bt_ess_attrs[] = {
 	BT_GATT_CHARACTERISTIC(BT_UUID_BAS_BATTERY_LEVEL,
 			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
 	BT_GATT_DESCRIPTOR(BT_UUID_BAS_BATTERY_LEVEL, BT_GATT_PERM_READ,
-			   read_u32, NULL, &battery_voltage),
+			   read_u16, NULL, &battery_voltage),
 	BT_GATT_CUD("Battery Voltage", BT_GATT_PERM_READ),
 
 	/* HTS221 */

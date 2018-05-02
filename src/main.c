@@ -36,13 +36,6 @@ static const struct bt_data bt_sd[] = {
 static struct bt_gatt_attr bt_ess_attrs[] = {
 	BT_GATT_PRIMARY_SERVICE(BT_UUID_ESS),
 
-	/* On-chip temp */
-	BT_GATT_CHARACTERISTIC(BT_UUID_TEMPERATURE,
-			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),
-	BT_GATT_DESCRIPTOR(BT_UUID_TEMPERATURE, BT_GATT_PERM_READ, read_u16,
-			   NULL, &on_chip_temp),
-	BT_GATT_CUD("On-Chip Temperature", BT_GATT_PERM_READ),
-
 	/* Battery voltage */
 	BT_GATT_CHARACTERISTIC(BT_UUID_BAS_BATTERY_LEVEL,
 			       BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY),

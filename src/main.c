@@ -24,12 +24,6 @@
 
 #define BT_SENSOR_THREAD_STACK_SIZE 256
 
-static const struct bt_sensor {
-	void (*init)(void);
-	void (*update)(void);
-} bt_sensors[] = {
-};
-
 static const struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0x0d, 0x18, 0x0f, 0x18, 0x05, 0x18),
@@ -184,9 +178,6 @@ void main(void)
 	int err;
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(bt_sensors); ++i)
-		bt_sensors[i].init();
-
 	err = bt_enable(bt_ready_cb);
 	if (err)
 		SYS_LOG_ERR("Bluetooth enable failed: %d", err);
@@ -195,14 +186,7 @@ void main(void)
 
 	gpio_test();
 
-	SYS_LOG_INF("Entering measurement loop");
-
 	for (;;) {
 		k_sleep(5000);
-		for (i = 0; i < ARRAY_SIZE(bt_sensors); ++i) {
-			if (!bt_sensors[i].update)
-				continue;
-			bt_sensors[i].update();
-		}
 	}
 }

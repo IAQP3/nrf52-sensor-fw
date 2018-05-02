@@ -28,10 +28,6 @@ static const struct bt_sensor {
 	void (*init)(void);
 	void (*update)(void);
 } bt_sensors[] = {
-	{
-		.init	= ccs811_bt_init,
-		.update	= ccs811_bt_update,
-	},
 #if 1
 	{
 		.init	= tcs34725_bt_init,

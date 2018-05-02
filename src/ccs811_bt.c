@@ -66,3 +66,16 @@ void ccs811_bt_init(void)
 	
 	ccs811_bt_update();
 }
+
+static void ccs811_bt_thread(void *p1, void *p2, void *p3)
+{
+	for (;;) {
+		if (!dev)
+			ccs811_bt_init();
+		ccs811_bt_update();
+		k_sleep(CCS811_BT_MEAS_INTERVAL);
+	}
+}
+
+K_THREAD_DEFINE(ccs811_bt_thd, 512, ccs811_bt_thread, NULL, NULL, NULL,
+		10, 0, K_NO_WAIT);

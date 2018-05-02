@@ -42,3 +42,16 @@ void tcs34725_bt_update(void)
 
 	SYS_LOG_INF("r: %d, g: %d, b: %d, l: %d", r.val1, g.val1, b.val1, l.val1);
 }
+
+static void tcs34725_bt_thread(void *p1, void *p2, void *p3)
+{
+	for (;;) {
+		if (!dev)
+			tcs34725_bt_init();
+		tcs34725_bt_update();
+		k_sleep(TCS34725_BT_MEAS_INTERVAL);
+	}
+}
+
+K_THREAD_DEFINE(tcs34725_bt_thd, 512, tcs34725_bt_thread, NULL, NULL, NULL,
+		10, 0, K_NO_WAIT);

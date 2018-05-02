@@ -6,6 +6,8 @@
 #define UUID_BLUE	BT_UUID_DECLARE_16(0x0205)
 #define UUID_LIGHT	BT_UUID_DECLARE_16(0x0206)
 
+#define TCS34725_BT_MEAS_INTERVAL 5000
+
 void tcs34725_bt_init(void);
 void tcs34725_bt_update(void);
 

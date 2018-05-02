@@ -29,10 +29,6 @@ static const struct bt_sensor {
 	void (*update)(void);
 } bt_sensors[] = {
 	{
-		.init   = battery_voltage_init,
-		.update = battery_voltage_update,
-	},
-	{
 		.init   = hts221_bt_init,
 		.update = hts221_bt_update,
 	},

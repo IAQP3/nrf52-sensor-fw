@@ -1,5 +1,6 @@
 #include <nrf.h>
 #include <stdio.h>
+#include <kernel.h>
 
 #include "battery_voltage.h"
 
@@ -44,3 +45,13 @@ void battery_voltage_update(void)
 	battery_voltage = battery_voltage_get();
 }
 
+static void battery_voltage_thread(void *p1, void *p2, void *p3)
+{
+	for (;;) {
+		battery_voltage_update();
+		k_sleep(BATTERY_VOLTAGE_MEAS_INTERVAL);
+	}
+}
+
+K_THREAD_DEFINE(battery_voltage_thd, 512, battery_voltage_thread, NULL, NULL, NULL,
+		10, 0, K_NO_WAIT);

@@ -40,6 +40,5 @@ void tcs34725_bt_update(void)
 	tcs34725_bt_b = b.val1;
 	tcs34725_bt_l = l.val1;
 
-	SYS_LOG_INF("r: %d, r: %d, b: %d, l: %d\n", r.val1, g.val1, b.val1,
-		    l.val1);
+	SYS_LOG_INF("r: %d, g: %d, b: %d, l: %d", r.val1, g.val1, b.val1, l.val1);
 }

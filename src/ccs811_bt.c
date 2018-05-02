@@ -23,17 +23,17 @@ void ccs811_bt_update(void)
 
 	for (retry_count = 0; retry_count < 10; ++retry_count) {
 		err = sensor_sample_fetch(dev);
-		if (err) {
-			SYS_LOG_ERR("CCS811 sample fetch failed");
+		if (err)
 			continue;
-		}
 		sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2_val);
 		if (!co2_val.val1)
 			continue;
 		break;
 	}
-	if (retry_count == 10)
+	if (retry_count == 10) {
+		SYS_LOG_ERR("CCS811 sample fetch failed");
 		return;
+	}
 
 	sensor_channel_get(dev, SENSOR_CHAN_CO2, &co2_val);
 	sensor_channel_get(dev, SENSOR_CHAN_VOC, &voc_val);
@@ -58,12 +58,13 @@ void ccs811_bt_init(void)
 	for (retry_count = 10; retry_count; --retry_count) {
 		err = sensor_sample_fetch(dev);
 		if (err) {
-			SYS_LOG_ERR("CCS811 sample fetch failed");
 			continue;
 		}
 		break;
 	}
-	
+	if (retry_count == 0)
+		SYS_LOG_ERR("CCS811 sample fetch failed");
+
 	ccs811_bt_update();
 }
 

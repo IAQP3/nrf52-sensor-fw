@@ -22,17 +22,12 @@
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
 
+#define BT_SENSOR_THREAD_STACK_SIZE 256
 
 static const struct bt_sensor {
 	void (*init)(void);
 	void (*update)(void);
 } bt_sensors[] = {
-#if 1
-	{
-		.init   = on_chip_temp_init,
-		.update = on_chip_temp_update,
-	},
-#endif
 	{
 		.init   = battery_voltage_init,
 		.update = battery_voltage_update,

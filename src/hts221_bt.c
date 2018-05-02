@@ -49,3 +49,16 @@ void hts221_bt_update(void)
 	SYS_LOG_INF("temp: %d", t.val1);
 	SYS_LOG_INF("humid: %d", h.val1);
 }
+
+static void hts221_bt_thread(void *p1, void *p2, void *p3)
+{
+	for (;;) {
+		if (!dev)
+			hts221_bt_init();
+		hts221_bt_update();
+		k_sleep(HTS221_BT_MEAS_INTERVAL);
+	}
+}
+
+K_THREAD_DEFINE(hts221_bt_thd, 512, hts221_bt_thread, NULL, NULL, NULL,
+		10, 0, K_NO_WAIT);

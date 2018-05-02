@@ -22,6 +22,37 @@
 #define DEVICE_NAME	CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN	(sizeof(CONFIG_BT_DEVICE_NAME) - 1)
 
+
+static const struct bt_sensor {
+	void (*init)(void);
+	void (*update)(void);
+} bt_sensors[] = {
+#if 1
+	{
+		.init   = on_chip_temp_init,
+		.update = on_chip_temp_update,
+	},
+#endif
+	{
+		.init   = battery_voltage_init,
+		.update = battery_voltage_update,
+	},
+	{
+		.init   = hts221_bt_init,
+		.update = hts221_bt_update,
+	},
+	{
+		.init	= ccs811_bt_init,
+		.update	= ccs811_bt_update,
+	},
+#if 1
+	{
+		.init	= tcs34725_bt_init,
+		.update = tcs34725_bt_update,
+	},
+#endif
+};
+
 static const struct bt_data bt_ad[] = {
 	BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
 	BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0x0d, 0x18, 0x0f, 0x18, 0x05, 0x18),
@@ -109,12 +140,6 @@ static void bt_ready_cb(int err)
 		return;
 	}
 
-	on_chip_temp_init();
-	battery_voltage_init();
-	hts221_bt_init();
-	ccs811_bt_init();
-	tcs34725_bt_init();
-
 	err = bt_gatt_service_register(&bt_ess_svc);
 
 	if (err) {
@@ -180,6 +205,10 @@ static void gpio_test(void)
 void main(void)
 {
 	int err;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(bt_sensors); ++i)
+		bt_sensors[i].init();
 
 	err = bt_enable(bt_ready_cb);
 	if (err)
@@ -192,11 +221,11 @@ void main(void)
 	SYS_LOG_INF("Entering measurement loop");
 
 	for (;;) {
-		k_sleep(500);
-		on_chip_temp_update();
-		battery_voltage_update();
-		hts221_bt_update();
-		ccs811_bt_update();
-		tcs34725_bt_update();
+		k_sleep(5000);
+		for (i = 0; i < ARRAY_SIZE(bt_sensors); ++i) {
+			if (!bt_sensors[i].update)
+				continue;
+			bt_sensors[i].update();
+		}
 	}
 }

@@ -2,7 +2,6 @@
 #include <nrf.h>
 #include <sensor.h>
 #include <stdio.h>
-#include <drivers/sensor/ccs811.h>
 
 #include "ccs811_bt.h"
 

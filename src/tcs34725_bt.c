@@ -1,3 +1,4 @@
+#include <gpio.h>
 #include <sensor.h>
 
 #include "tcs34725.h"
@@ -7,15 +8,27 @@
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
-static struct device *dev;
+#define LED_CTRL_PIN 4
+
+static struct device *sensor;
+static struct device *gpio;
 
 void tcs34725_bt_init(void)
 {
-	dev = device_get_binding("TCS34725");
-	if (!dev) {
+	sensor = device_get_binding("TCS34725");
+	if (!sensor) {
 		SYS_LOG_ERR("Failed to get TCS34725H device binding");
 		return;
 	}
+
+	gpio = device_get_binding(CONFIG_GPIO_NRF5_P0_DEV_NAME);
+	if (!gpio) {
+		SYS_LOG_ERR("Failed to get GPIO device binding");
+		return;
+	}
+
+	gpio_pin_configure(gpio, LED_CTRL_PIN, GPIO_DIR_OUT);
+	gpio_pin_write(gpio, LED_CTRL_PIN, 0);
 }
 
 void tcs34725_bt_update(void)
@@ -23,17 +36,22 @@ void tcs34725_bt_update(void)
 	struct sensor_value r, g, b, l;
 	int err;
 
-	if (!dev)
+	if (!sensor || !gpio)
 		return;
 
-	err = sensor_sample_fetch(dev);
+	gpio_pin_write(gpio, LED_CTRL_PIN, 1);
+	k_sleep(1000);
+
+	err = sensor_sample_fetch(sensor);
 	if (err)
 		return;
 
-	sensor_channel_get(dev, SENSOR_CHAN_RED, &r);
-	sensor_channel_get(dev, SENSOR_CHAN_GREEN, &g);
-	sensor_channel_get(dev, SENSOR_CHAN_BLUE, &b);
-	sensor_channel_get(dev, SENSOR_CHAN_LIGHT, &l);
+	gpio_pin_write(gpio, LED_CTRL_PIN, 0);
+
+	sensor_channel_get(sensor, SENSOR_CHAN_RED, &r);
+	sensor_channel_get(sensor, SENSOR_CHAN_GREEN, &g);
+	sensor_channel_get(sensor, SENSOR_CHAN_BLUE, &b);
+	sensor_channel_get(sensor, SENSOR_CHAN_LIGHT, &l);
 
 	tcs34725_bt_r = r.val1;
 	tcs34725_bt_g = g.val1;
@@ -46,7 +64,7 @@ void tcs34725_bt_update(void)
 static void tcs34725_bt_thread(void *p1, void *p2, void *p3)
 {
 	for (;;) {
-		if (!dev)
+		if (!sensor)
 			tcs34725_bt_init();
 		tcs34725_bt_update();
 		k_sleep(TCS34725_BT_MEAS_INTERVAL);

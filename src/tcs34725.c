@@ -36,6 +36,13 @@ static int tcs34725_init(struct device *dev)
 		return err;
 	}
 
+	err = i2c_reg_write_byte(data->i2c, TCS34725_ADDRESS, TCS34725_ATIME,
+				 0xf6);
+	if (err) {
+		SYS_LOG_ERR("Enabling tcs34725 failed\n");
+		return err;
+	}
+
 	err = i2c_reg_write_byte(data->i2c, TCS34725_ADDRESS, TCS34725_ENABLE,
 				 TCS34725_ENABLE_PON | TCS34725_ENABLE_AEN);
 	if (err) {

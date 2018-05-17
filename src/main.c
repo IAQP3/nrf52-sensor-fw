@@ -6,6 +6,7 @@
 #include <sensor.h>
 #include <gpio.h>
 #include <nrf.h>
+#include <soc_power.h>
 
 #include "tcs34725.h"
 #include "on_chip_temp.h"
@@ -178,6 +179,8 @@ void main(void)
 	bt_conn_cb_register(&bt_conn_callbacks);
 
 	gpio_test();
+
+	_sys_soc_set_power_state(SYS_POWER_STATE_CPU_LPS_1);
 
 	for (;;) {
 		k_sleep(5000);

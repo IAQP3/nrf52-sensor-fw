@@ -48,8 +48,7 @@ void hts221_bt_update(void)
 
 	hts221_bt_temp = sensor_value_to_double(&t) * 100;
 	hts221_bt_humid = sensor_value_to_double(&h) * 100;
-	SYS_LOG_INF("temp: %d", t.val1);
-	SYS_LOG_INF("humid: %d", h.val1);
+	SYS_LOG_INF("temp: %d, humid: %d", t.val1, h.val1);
 }
 
 static void hts221_bt_thread(void *p1, void *p2, void *p3)

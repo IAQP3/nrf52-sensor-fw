@@ -36,8 +36,8 @@ int vdd_rail_dev_call_init(struct vdd_rail_dev *rail_dev, struct device *dev)
 {
 	if (!rail_dev->need_init)
 		return 0;
-	dev->config->init(dev);
 	rail_dev->need_init = 0;
+	return dev->config->init(dev);
 }
 
 void vdd_get(void)

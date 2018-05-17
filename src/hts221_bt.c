@@ -11,11 +11,9 @@
 #include <logging/sys_log.h>
 
 static struct device *dev;
-static struct vdd_rail_dev rail_dev;
 
 void hts221_bt_init(void)
 {
-	int err;
 
 	dev = device_get_binding("HTS221");
 	if (!dev) {

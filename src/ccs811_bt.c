@@ -6,6 +6,7 @@
 
 #include "ccs811_bt.h"
 #include "vdd.h"
+#include "meas_rates.h"
 
 #define SYS_LOG_DOMAIN "CCS811_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -104,7 +105,7 @@ static void ccs811_bt_thread(void *p1, void *p2, void *p3)
 
 		vdd_put();
 
-		k_sleep(CCS811_BT_MEAS_INTERVAL);
+		k_sleep(meas_intervals->ccs811);
 	}
 }
 

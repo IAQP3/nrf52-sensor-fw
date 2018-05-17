@@ -11,4 +11,5 @@ target_sources(app PRIVATE
 	       src/ccs811_bt.c
 	       src/tcs34725_bt.c
 	       src/vdd.c
+	       src/meas_rates.c
 )

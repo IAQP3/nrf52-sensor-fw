@@ -7,6 +7,7 @@
 #include <gpio.h>
 #include <nrf.h>
 #include <soc_power.h>
+#include <board.h>
 
 #include "tcs34725.h"
 #include "on_chip_temp.h"
@@ -15,6 +16,7 @@
 #include "ccs811_bt.h"
 #include "tcs34725_bt.h"
 #include "bt_gatt_read.h"
+#include "meas_rates.h"
 
 #define SYS_LOG_DOMAIN "main"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -167,16 +169,31 @@ static void gpio_test(void)
 }
 #endif
 
+void set_meas_intervals(void)
+{
+	struct device *gpio = device_get_binding(SW0_GPIO_NAME);
+	int button;
+
+	gpio_pin_configure(gpio, SW0_GPIO_PIN, GPIO_DIR_IN | GPIO_PUD_PULL_UP);
+	gpio_pin_write(gpio, SW0_GPIO_PIN, 1);
+	gpio_pin_read(gpio, SW0_GPIO_PIN, &button);
+	printf("Button: %d\n", button);
+	gpio_pin_write(gpio, SW0_GPIO_PIN, 0);
+	gpio_pin_configure(gpio, SW0_GPIO_PIN, GPIO_DIR_IN);
+	meas_intervals = button ? &fast_meas_intervals : &slow_meas_intervals;
+}
+
 void main(void)
 {
 	int err;
-	int i;
 
 	err = bt_enable(bt_ready_cb);
 	if (err)
 		SYS_LOG_ERR("Bluetooth enable failed: %d", err);
 
 	bt_conn_cb_register(&bt_conn_callbacks);
+
+	set_meas_intervals();
 
 	gpio_test();
 

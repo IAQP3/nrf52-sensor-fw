@@ -4,6 +4,7 @@
 
 #include "hts221_bt.h"
 #include "vdd.h"
+#include "meas_rates.h"
 
 #define SYS_LOG_DOMAIN "HTS221_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -58,7 +59,7 @@ static void hts221_bt_thread(void *p1, void *p2, void *p3)
 		hts221_bt_init();
 		hts221_bt_update();
 		vdd_put();
-		k_sleep(HTS221_BT_MEAS_INTERVAL);
+		k_sleep(meas_intervals->hts221);
 	}
 }
 

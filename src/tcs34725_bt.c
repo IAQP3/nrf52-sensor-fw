@@ -4,6 +4,7 @@
 #include "tcs34725.h"
 #include "tcs34725_bt.h"
 #include "vdd.h"
+#include "meas_rates.h"
 
 #define SYS_LOG_DOMAIN "TCS34725_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -74,7 +75,7 @@ static void tcs34725_bt_thread(void *p1, void *p2, void *p3)
 		tcs34725_bt_init();
 		tcs34725_bt_update();
 		vdd_put();
-		k_sleep(TCS34725_BT_MEAS_INTERVAL);
+		k_sleep(meas_intervals->tcs34725);
 	}
 }
 

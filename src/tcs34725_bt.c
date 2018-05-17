@@ -3,6 +3,7 @@
 
 #include "tcs34725.h"
 #include "tcs34725_bt.h"
+#include "vdd.h"
 
 #define SYS_LOG_DOMAIN "TCS34725_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
@@ -12,6 +13,7 @@
 
 static struct device *sensor;
 static struct device *gpio;
+static struct vdd_rail_dev rail_dev;
 
 void tcs34725_bt_init(void)
 {
@@ -20,6 +22,8 @@ void tcs34725_bt_init(void)
 		SYS_LOG_ERR("Failed to get TCS34725H device binding");
 		return;
 	}
+
+	vdd_rail_dev_call_init(&rail_dev, sensor);
 
 	gpio = device_get_binding(CONFIG_GPIO_NRF5_P0_DEV_NAME);
 	if (!gpio) {
@@ -63,10 +67,13 @@ void tcs34725_bt_update(void)
 
 static void tcs34725_bt_thread(void *p1, void *p2, void *p3)
 {
+	vdd_rail_dev_register(&rail_dev);
+
 	for (;;) {
-		if (!sensor)
-			tcs34725_bt_init();
+		vdd_get();
+		tcs34725_bt_init();
 		tcs34725_bt_update();
+		vdd_put();
 		k_sleep(TCS34725_BT_MEAS_INTERVAL);
 	}
 }

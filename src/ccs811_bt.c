@@ -2,14 +2,21 @@
 #include <nrf.h>
 #include <sensor.h>
 #include <stdio.h>
+#include <gpio.h>
 
 #include "ccs811_bt.h"
+#include "vdd.h"
 
 #define SYS_LOG_DOMAIN "CCS811_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
+#define CCS_VDD_PWR_CTRL_GPIO_PIN 10
+
 static struct device *dev;
+static struct device *ccs_vdd_gpio;
+static struct vdd_rail_dev rail_dev;
+static struct vdd_rail_dev rail_dev_gpio;
 
 void ccs811_bt_update(void)
 {
@@ -56,6 +63,8 @@ void ccs811_bt_init(void)
 		return;
 	}
 
+	vdd_rail_dev_call_init(&rail_dev, dev);
+
 	for (retry_count = 10; retry_count; --retry_count) {
 		err = sensor_sample_fetch(dev);
 		if (err) {
@@ -66,19 +75,36 @@ void ccs811_bt_init(void)
 	if (retry_count == 0)
 		SYS_LOG_ERR("CCS811 sample fetch failed");
 
-	ccs811_bt_update();
-
 	sensor_attr_set(dev, SENSOR_CHAN_CO2, SENSOR_ATTR_SAMPLING_INTERVAL,
 			&sampling_interval);
 }
 
 static void ccs811_bt_thread(void *p1, void *p2, void *p3)
 {
+	vdd_rail_dev_register(&rail_dev);
+	vdd_rail_dev_register(&rail_dev_gpio);
+
 	for (;;) {
-		if (!dev)
-			ccs811_bt_init();
-		k_sleep(CCS811_BT_MEAS_INTERVAL);
+		vdd_get();
+
+		ccs_vdd_gpio = device_get_binding(CONFIG_GPIO_SX1509B_DEV_NAME);
+		if (!ccs_vdd_gpio) {
+			SYS_LOG_ERR("Failed to get SX1509B device binding");
+			return;
+		}
+		vdd_rail_dev_call_init(&rail_dev_gpio, ccs_vdd_gpio);
+		gpio_pin_configure(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN,
+				   GPIO_DIR_OUT);
+		gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 1);
+
+		ccs811_bt_init();
 		ccs811_bt_update();
+
+		gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 0);
+
+		vdd_put();
+
+		k_sleep(CCS811_BT_MEAS_INTERVAL);
 	}
 }
 

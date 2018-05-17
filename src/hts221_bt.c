@@ -3,12 +3,14 @@
 #include <stdio.h>
 
 #include "hts221_bt.h"
+#include "vdd.h"
 
 #define SYS_LOG_DOMAIN "HTS221_BT"
 #define SYS_LOG_LEVEL SYS_LOG_LEVEL_INFO
 #include <logging/sys_log.h>
 
 static struct device *dev;
+static struct vdd_rail_dev rail_dev;
 
 void hts221_bt_init(void)
 {
@@ -20,7 +22,7 @@ void hts221_bt_init(void)
 		return;
 	}
 
-	hts221_bt_update();
+	/* There's no need to rerun the device init on HTS221 */
 }
 
 void hts221_bt_update(void)
@@ -53,9 +55,10 @@ void hts221_bt_update(void)
 static void hts221_bt_thread(void *p1, void *p2, void *p3)
 {
 	for (;;) {
-		if (!dev)
-			hts221_bt_init();
+		vdd_get();
+		hts221_bt_init();
 		hts221_bt_update();
+		vdd_put();
 		k_sleep(HTS221_BT_MEAS_INTERVAL);
 	}
 }

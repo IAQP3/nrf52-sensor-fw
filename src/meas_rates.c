@@ -1,6 +1,6 @@
 #include "meas_rates.h"
 
-#if 1
+#if 0
 /* Debug */
 const struct meas_intervals fast_meas_intervals = {
 	.ccs811		= 10000,

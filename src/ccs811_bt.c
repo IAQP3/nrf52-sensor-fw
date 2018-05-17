@@ -80,32 +80,51 @@ void ccs811_bt_init(void)
 			&sampling_interval);
 }
 
+static void ccs811_slow_measurement(void)
+{
+	vdd_get();
+
+	ccs_vdd_gpio = device_get_binding(CONFIG_GPIO_SX1509B_DEV_NAME);
+	if (!ccs_vdd_gpio) {
+		SYS_LOG_ERR("Failed to get SX1509B device binding");
+		return;
+	}
+	vdd_rail_dev_call_init(&rail_dev_gpio, ccs_vdd_gpio);
+	gpio_pin_configure(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN,
+			   GPIO_DIR_OUT);
+	gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 1);
+
+	ccs811_bt_init();
+	k_sleep(meas_intervals->ccs811);
+	ccs811_bt_update();
+	gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 0);
+
+	vdd_put();
+}
+
+static void ccs811_fast_measurement(void)
+{
+	/* There's no matching put because the rail has to be always on */
+	vdd_get();
+
+	if (!dev)
+		ccs811_bt_init();
+	k_sleep(meas_intervals->ccs811);
+	ccs811_bt_update();
+}
+
 static void ccs811_bt_thread(void *p1, void *p2, void *p3)
 {
 	vdd_rail_dev_register(&rail_dev);
 	vdd_rail_dev_register(&rail_dev_gpio);
 
 	for (;;) {
-		vdd_get();
-
-		ccs_vdd_gpio = device_get_binding(CONFIG_GPIO_SX1509B_DEV_NAME);
-		if (!ccs_vdd_gpio) {
-			SYS_LOG_ERR("Failed to get SX1509B device binding");
-			return;
+		/* 30 min is the tie point */
+		if (meas_intervals->ccs811 > 1800000) {
+			ccs811_slow_measurement();
+		} else {
+			ccs811_fast_measurement();
 		}
-		vdd_rail_dev_call_init(&rail_dev_gpio, ccs_vdd_gpio);
-		gpio_pin_configure(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN,
-				   GPIO_DIR_OUT);
-		gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 1);
-
-		ccs811_bt_init();
-		ccs811_bt_update();
-
-		gpio_pin_write(ccs_vdd_gpio, CCS_VDD_PWR_CTRL_GPIO_PIN, 0);
-
-		vdd_put();
-
-		k_sleep(meas_intervals->ccs811);
 	}
 }
 
